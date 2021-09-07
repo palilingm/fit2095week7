@@ -8,7 +8,7 @@ const movies = require('./routers/movie');
 
 const app = express();
 
-app.listen(80);
+app.listen(8080);
 
 
 app.use(express.json());
