@@ -10,7 +10,7 @@ module.exports = {
     },
     createOne: function (req, res) {
         let newMovieDetails = req.body;
-        newMovieDetails._id = new mongoose.Types.ObjectId();
+        // newMovieDetails._id = new mongoose.Types.ObjectId(); //Removed because of added auto to schema
         Movie.create(newMovieDetails, function (err, movie) {
             if (err) return res.status(400).json(err);
             res.json(movie);
@@ -35,5 +35,15 @@ module.exports = {
             if (!movie) return res.status(404).json();
             res.json(movie);
         });
+    },
+    deleteOne: (req, res) => { //Delete a movie by ID
+        Movie.findByIdAndDelete({
+                _id: req.params.id
+            },
+            function (err, data) {
+                if (err) return res.status(400).json(err);
+                if (data == null) return res.status(404).json('No movie with such ID!');
+                res.json();
+            });
     }
 };

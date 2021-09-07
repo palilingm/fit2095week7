@@ -13,7 +13,7 @@ module.exports = {
     },
     createOne: function (req, res) {
         let newActorDetails = req.body;
-        newActorDetails._id = new mongoose.Types.ObjectId();
+        // newActorDetails._id = new mongoose.Types.ObjectId(); //Removed because of added auto to schema
         let actor = new Actor(newActorDetails);
         actor.save(function (err) {
             res.json(actor);
@@ -54,7 +54,7 @@ module.exports = {
             if (err) return res.status(400).json(err);
             if (!actor) return res.status(404).json();
             Movie.findOne({
-                _id: req.body.movies
+                _id: req.params.movie //changed
             }, function (err, movie) {
                 if (err) return res.status(400).json(err);
                 if (!movie) return res.status(404).json();
@@ -63,26 +63,33 @@ module.exports = {
                     if (err) return res.status(500).json(err);
                     res.json(actor);
                 });
-            })
+            });
         });
     },
-    addTeacher: (req, res) => {
-        Student.findOne({
-            _id: req.params.sId
-        }), (err, student) => {
-            if (err) {
-                return res.status(400).json(err);
-            }
-            if (!student) {
-                return res.status(404).json();
-            }
-            student.teachers.push(req.params.tId);
-            student.save((err) => {
-                if (err) {
-                    return res.status(500).json(err)
-                }
-                res.send('Done');
-            })
-        }
+    deleteMovie: (req, res) => { //Remove a movie from an actor
+        Actor.findOne({
+            _id: req.params.id
+        }, function (err, actor) {
+            if (err) return res.status(400).json(err);
+            if (!actor) return res.status(404).json("No such actor is found!");
+            console.log(actor.movies);
+            let pos = findOccurence(actor.movies, req.params.movie);
+            if (!pos) return res.status(404).json("The actor did not play in that movie");
+            actor.movies.splice(pos, 1);
+            actor.save(function (err) {
+                    if (err) return res.status(500).json(err);
+                    res.json(actor);
+                });
+        });
     }
 };
+
+//functions
+function findOccurence(array, query) { //Find first occurence in an array
+    for (let i = 0; i < array.length; i++) {
+        if (array[i] == query) {
+            return i;
+        }
+    }
+    return false;
+}

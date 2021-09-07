@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const actorSchema = new mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
+    _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        auto: true
+    },
     name: {
         type: String,
         required: true
